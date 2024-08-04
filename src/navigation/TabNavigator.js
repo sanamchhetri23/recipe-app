@@ -29,6 +29,7 @@ export default function TabNavigator() {
                     // You can return any component here to use as the icon
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
+                
                 tabBarActiveTintColor: 'tomato',
                 tabBarInactiveTintColor: 'gray',
             })}
