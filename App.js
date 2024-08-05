@@ -1,11 +1,9 @@
-// App.js
-
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
-import AuthStack from './src/navigation/AppNavigator';
+import { auth } from './src/database/firebase';
+import AuthStack from './src/navigation/AuthNavigator';
 import TabNavigator from './src/navigation/TabNavigator';
 
 const Stack = createStackNavigator();
