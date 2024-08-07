@@ -5,6 +5,16 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './src/database/firebase';
 import AuthStack from './src/navigation/AuthNavigator';
 import TabNavigator from './src/navigation/TabNavigator';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 
 const Stack = createStackNavigator();
 

@@ -1,5 +1,3 @@
-// src/components/profile.js
-
 import React, { useEffect, useState } from 'react';
 import { 
   View, 
@@ -9,11 +7,15 @@ import {
   Button, 
   FlatList, 
   Image, 
-  TouchableOpacity 
+  TouchableOpacity,
+  Dimensions 
 } from 'react-native';
-import { auth, firestore } from '../database/firebase'; // Adjust the import path as necessary
-
+import { auth, firestore } from '../database/firebase'; 
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { Ionicons } from '@expo/vector-icons';
+
+const { width } = Dimensions.get('window');
+const cardWidth = (width - 60) / 2; 
 
 const Profile = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -62,19 +64,28 @@ const Profile = ({ navigation }) => {
     }
   };
 
-
-
   const handleRecipeDeleted = () => {
     fetchUserData();
   };
 
   const renderRecipeItem = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.recipeCard} 
-      onPress={() => navigation.navigate('RecipeDetail', { recipeId: item.id, onDelete: handleRecipeDeleted })}
-    >
+    <TouchableOpacity  style={styles.recipeCard} 
+    onPress={() => navigation.navigate('RecipeDetail', { 
+      recipeId: item.id, 
+      title: item.title,
+      onDelete: handleRecipeDeleted 
+    })}
+  >
       <Image source={{ uri: item.imageUrl }} style={styles.recipeImage} />
-      <Text style={styles.recipeTitle}>{item.title}</Text>
+      <View style={styles.recipeInfo}>
+        <Text style={styles.recipeTitle} numberOfLines={2}>{item.title}</Text>
+        <View style={styles.recipeDetails}>
+          <Ionicons name="time-outline" size={16} color="#666" />
+          <Text style={styles.recipeDetailText}>{item.cookingTime || 'N/A'}</Text>
+          <Ionicons name="people-outline" size={16} color="#666" />
+          <Text style={styles.recipeDetailText}>{item.serves || 'N/A'}</Text>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 
@@ -99,7 +110,7 @@ const Profile = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Profile</Text>
-       
+        <Ionicons name="person-circle" size={200} color="black" style={styles.icon} />
       </View>
       <View style={styles.userInfo}>
         <Text style={styles.label}>Name: {userName}</Text>
@@ -112,6 +123,7 @@ const Profile = ({ navigation }) => {
           renderItem={renderRecipeItem}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.recipeList}
+          numColumns={2}
         />
       ) : (
         <Text style={styles.noRecipesText}>No recipes found. Add some recipes!</Text>
@@ -124,7 +136,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    marginTop: 50
   },
   loadingContainer: {
     flex: 1,
@@ -132,51 +144,69 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'center',
+  },
+  icon: {
+  alignSelf: 'center'
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
+    marginRight: 10,
   },
   userInfo: {
     marginBottom: 20,
   },
   label: {
     fontSize: 18,
-    marginVertical: 4,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 16,
+    borderBottomWidth: 0.2,
+    marginBottom: 20
+
   },
   recipeList: {
     paddingBottom: 16,
   },
   recipeCard: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
-    marginBottom: 10,
+    width: cardWidth,
+    backgroundColor: '#D9D9D9',
+    borderWidth: 1,
+    marginBottom: 16,
+    marginHorizontal: 8,
     overflow: 'hidden',
-    elevation: 2,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   recipeImage: {
-    width: '100%',
-    height: 150,
+    width: '86%',
+    alignSelf: 'center',
+    margin: '6%',
+    height: 120,
     resizeMode: 'cover',
   },
-  recipeTitle: {
+  recipeInfo: {
     padding: 10,
+  },
+  recipeTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
+    marginBottom: 5,
+  },
+  recipeDetails: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  recipeDetailText: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 4,
+    marginRight: 8,
   },
   errorText: {
     color: 'red',

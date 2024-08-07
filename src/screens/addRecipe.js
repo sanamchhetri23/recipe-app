@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import RNPickerSelect from 'react-native-picker-select';
@@ -92,80 +92,119 @@ export default function AddRecipe({ navigation }) {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Pick an Image</Text>
-      <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.selectedImage} />
-        ) : (
-          <View style={styles.plusIconContainer}>
-            <Ionicons name="add" size={40} color="#888" />
-            <Text style={styles.addPhotoText}>Add Recipe Image</Text>
-          </View>
-        )}
-      </TouchableOpacity>
-      <RNPickerSelect
-        onValueChange={(value) => setCategory(value)}
-        items={[
-          {label: 'No Selection', value: ''},
-          { label: 'Breakfast', value: 'breakfast' },
-          { label: 'Lunch', value: 'lunch' },
-          { label: 'Dinner', value: 'dinner' },
-          { label: 'Snacks', value: 'snacks' },
-          { label: 'Desserts', value: 'desserts' },
-          { label: 'Appetizers', value: 'appetizers' },
-        ]}
-        style={styles.input}
-        placeholder={{
-          label: 'Select a category...',
-          value: null,
-          color: '#9EA0A4',
-        }}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Recipe Title"
-        value={title}
-        onChangeText={setTitle}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Cooking Time"
-        value={cookingTime}
-        onChangeText={setCookingTime}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Serves"
-        value={serves}
-        onChangeText={setServes}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ingredients"
-        value={ingredients}
-        onChangeText={setIngredients}
-        numberOfLines={3}
-      />
-      <TextInput
-        style={[styles.input, styles.descriptionInput]}
-        placeholder="Directions"
-        value={description}
-        onChangeText={setDescription}
-        multiline
-      />
-      <Button title="Add Recipe" onPress={uploadImageAndSaveData} disabled={loading} />
-      {loading && <Text style={styles.loadingText}>Uploading...</Text>}
-    </ScrollView>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <Text style={styles.title}>Pick an Image</Text>
+        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.selectedImage} />
+          ) : (
+            <View style={styles.plusIconContainer}>
+              <Ionicons name="add" size={40} color="#888" />
+              <Text style={styles.addPhotoText}>Add Recipe Image</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+        <RNPickerSelect
+          onValueChange={(value) => setCategory(value)}
+          items={[
+            { label: 'Breakfast', value: 'breakfast' },
+            { label: 'Lunch', value: 'lunch' },
+            { label: 'Dinner', value: 'dinner' },
+            { label: 'Snacks', value: 'snacks' },
+            { label: 'Desserts', value: 'desserts' },
+            { label: 'Appetizers', value: 'appetizers' },
+          ]}
+          style={pickerSelectStyles}
+          placeholder={{
+            label: 'Select a category...',
+            value: null,
+            color: '#9EA0A4',
+          }}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Recipe Title"
+          value={title}
+          onChangeText={setTitle}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Cooking Time"
+          value={cookingTime}
+          onChangeText={setCookingTime}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Serves"
+          value={serves}
+          onChangeText={setServes}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Ingredients"
+          value={ingredients}
+          onChangeText={setIngredients}
+          numberOfLines={3}
+        />
+        <TextInput
+          style={[styles.input, styles.descriptionInput]}
+          placeholder="Directions"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+        />
+
+        <TouchableOpacity
+          style={[styles.publishButton, loading && styles.disabledButton]}
+          onPress={uploadImageAndSaveData}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>Publish</Text>
+        </TouchableOpacity>
+        {loading && <Text style={styles.loadingText}>Uploading...</Text>}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
-// Styles for the component
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    borderWidth: 0.2,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30, 
+    backgroundColor: 'white',
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.2,
+    borderColor: 'gray',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30, 
+    backgroundColor: 'white',
+  },
+});
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     marginTop: 50
+  },
+  scrollView: {
+    flexGrow: 1,
+    padding: 20,
   },
   title: {
     fontSize: 16,
@@ -196,6 +235,19 @@ const styles = StyleSheet.create({
   },
   plusIconContainer: {
     alignItems: 'center',
+  },
+  publishButton: {
+    backgroundColor: 'royalblue',
+    paddingVertical: 8,
+    paddingHorizontal: 30,
+    borderRadius: 6,
+    alignSelf: 'center',
+    marginTop: '2%',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   addPhotoText: {
     marginTop: 10,

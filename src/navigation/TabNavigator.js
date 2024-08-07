@@ -1,35 +1,40 @@
-// src/navigation/TabNavigator.js
-
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
-import AddRecipe from '../components/addRecipe';
-import Favourite from '../components/favourite'
-import Setting from '../components/setting';
-import { CategoryRecipeDetail } from '../components/categoryRecipeDescription';
-
+import AddRecipe from '../screens/addRecipe';
+import Favourite from '../screens/favourite';
+import Setting from '../screens/setting';
+import Home from '../screens/home';
+import CategoryRecipe from '../screens/recipeCategory'; // Direct import
+import CategoryRecipeDetail from '../screens/recipeDetail'; // Direct import
+import Profile from '../components/profile'; // Direct import
+import RecipeDetails from '../screens/myRecipe'; // Direct import
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+const FavoriteStack = createStackNavigator();
 
 const HomeNavigation = () => (
   <HomeStack.Navigator>
     <HomeStack.Screen 
-      name="HomeMain" 
-      getComponent={() => require('../components/home').default}
+      name="HomeScreen" 
+      component={Home}
       options={{ headerShown: false }} // This hides the header for the main home screen
     />
     <HomeStack.Screen 
       name="CategoryRecipes" 
-      getComponent={() => require('../components/categoryRecipe').default}
+      component={CategoryRecipe}
       options={({ route }) => ({ title: route.params.category })} // This sets the title to the category name
     />
-     <HomeStack.Screen 
+    <HomeStack.Screen 
       name="CategoryRecipeDetail" 
       component={CategoryRecipeDetail}
-      options={{ title: 'route.params.title'}}
+      options={({ route }) => ({ 
+        title: route.params?.title || 'Recipe Details',
+        headerBackTitleVisible: false,
+      })}
     />
   </HomeStack.Navigator>
 );
@@ -38,15 +43,36 @@ const ProfileNavigation = () => (
   <ProfileStack.Navigator>
     <ProfileStack.Screen 
       name="ProfileMain" 
-      getComponent={() => require('../components/profile').default}
+      component={Profile}
       options={{ headerShown: false }} // This hides the header for the main profile screen
     />
     <ProfileStack.Screen 
       name="RecipeDetail" 
-      getComponent={() => require('../components/recipeDetails').default}
-      options={{ title: 'Recipe Details' }}
+      component={RecipeDetails}
+      options={({ route }) => ({ 
+        title: route.params?.title || 'Recipe Details',
+        headerBackTitleVisible: false,
+      })}
     />
   </ProfileStack.Navigator>
+);
+
+const FavouriteNavigation = () => (
+  <FavoriteStack.Navigator>
+    <FavoriteStack.Screen 
+      name="FavoriteMain" 
+      component={Favourite}
+      options={{ headerShown: false }}
+    />
+    <FavoriteStack.Screen 
+      name="CategoryRecipeDetail" 
+      component={CategoryRecipeDetail}
+      options={({ route }) => ({ 
+        title: route.params?.title || 'Recipe Details',
+        headerBackTitleVisible: false,
+      })}
+    />
+  </FavoriteStack.Navigator>
 );
 
 export default function TabNavigator() {
@@ -76,7 +102,7 @@ export default function TabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeNavigation} />
-      <Tab.Screen name="Favourite" component={Favourite} />
+      <Tab.Screen name="Favourite" component={FavouriteNavigation} />
       <Tab.Screen name="AddRecipe" component={AddRecipe} />
       <Tab.Screen name="Profile" component={ProfileNavigation} /> 
       <Tab.Screen name="Setting" component={Setting} /> 
